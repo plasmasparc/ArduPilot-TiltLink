@@ -16,8 +16,8 @@ can connect without any additional hardware.
 
 ## Why two bands
 
-Control and telemetry have opposite requirements. Control is a few bytes at a
-low, strictly periodic rate and needs range and robustness — LoRa at 869.5 MHz
+Control is a few bytes at a low, strictly periodic rate and needs range and 
+robustness — LoRa at 869.5 MHz
 delivers that within the duty-cycle budget of the European g3 sub-band.
 Telemetry is a continuous 57600-baud byte stream and needs throughput and low
 latency, but no particular range — 2.4 GHz nRF24 in Enhanced ShockBurst mode at
@@ -75,9 +75,3 @@ and handheld nodes.
 - 869.4–869.65 MHz is a 10% duty-cycle sub-band in the EU. At SF7/BW500 and
   5 Hz the frame duty is 4.5%; changing bandwidth or rate changes that number.
   Verify against local regulations before transmitting.
-
-## License
-
-MIT — see [LICENSE](LICENSE). `firmware/03_handheld_d32_lora_rc/v1_MPU6050.h` is
-third-party code (Mahony AHRS filter, MPU6050 register map); see the attribution
-header in that file.
