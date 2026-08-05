@@ -95,4 +95,4 @@ which is the safer arrangement: no code path can then exceed the limit.
 
 **Diagnostics.** 2 Hz on USB serial at 115200: switch state, arm latch, filtered
 roll/pitch, raw pot, resulting CRSF channel values, frames sent and skipped, and
-the measured IMU update rate.
+the measured IMU update rate
