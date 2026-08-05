@@ -27,3 +27,16 @@ CRSF at 416666 baud needs a DMA-capable UART for RC input. Check the board's
 `SERIAL_ORDER` and pick a port that has DMA on both directions before assuming
 SERIAL1 is the right one on your hardware.
 
+## Telemetry stream rates
+
+From ArduPilot 4.7 onwards the stream-rate parameters are named `MAVx_` rather
+than `SRx_`, and *x* indexes the MAVLink-protocol ports in order, not the
+`SERIALx` number. With the configuration above, SERIAL0 is `MAV1_` and SERIAL5
+is `MAV2_`.
+
+Set bit 2 (value 4) in `MAV2_OPTIONS`, otherwise the GCS overrides the rates you
+configure as soon as it connects.
+
+The link carries roughly 5760 B/s at 57600 baud. Set stream rates so the FC does
+not try to push more than the UART can carry — the radio has ninefold headroom
+above the UART, so the UART is the binding constraint, not the RF link.
