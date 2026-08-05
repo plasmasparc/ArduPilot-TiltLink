@@ -61,3 +61,27 @@ so the FC and the GCS display real link state rather than a placeholder.
 Link quality is computed over a 2 s window as the ratio of good frames to
 expected frames, where expected is derived from `AIR_STALE_MS`, and clamped to
 100.
+
+## 3. Telemetry framing — air ↔ ground, nRF24
+
+The link is byte-transparent: it carries the FC's MAVLink stream without parsing
+it. There is no framing layer of its own beyond a single length header, so
+MAVLink message boundaries are not preserved across packets and do not need to
+be — the receiving MAVLink parser resynchronises on its own.
+
+| Byte | Content |
+|------|---------|
+| 0 | payload length *n*, 0–31 |
+| 1…n | raw stream bytes |
+
+Header 0 is an empty poll or an empty ACK: it carries no data but keeps the
+transaction cadence going, which is what allows uplink to flow while the
+downlink is idle. The air node emits one every 1 ms when its buffer is empty.
+
+Both ends validate `payload[0] == len - 1` using the dynamic payload length
+reported by the hardware, and count mismatches as `badHdr`. Corruption in flight
+is already caught by the 16-bit hardware CRC; a bad header means a software or
+framing fault, so the two counters are diagnostically distinct.
+
+Each side buffers 4096 bytes and drops oldest on overflow. Bytes leave the
+buffer only after the hardware confirms delivery.
