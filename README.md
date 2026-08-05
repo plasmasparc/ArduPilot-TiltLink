@@ -20,7 +20,7 @@ Control is a few bytes at a low, strictly periodic rate and needs range and
 robustness — LoRa at 869.5 MHz
 delivers that within the duty-cycle budget of the European g3 sub-band.
 Telemetry is a continuous 57600-baud byte stream and needs throughput and low
-latency, but no particular range — 2.4 GHz nRF24 in Enhanced ShockBurst mode at
+latency — 2.4 GHz nRF24 in Enhanced ShockBurst mode at
 2 Mbps delivers roughly nine times the required capacity per direction, with no
 duty-cycle limit under EN 300 328. Splitting them means neither link has to be
 compromised for the other, and a telemetry stall can never delay a control frame.
