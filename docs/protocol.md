@@ -85,3 +85,14 @@ framing fault, so the two counters are diagnostically distinct.
 
 Each side buffers 4096 bytes and drops oldest on overflow. Bytes leave the
 buffer only after the hardware confirms delivery.
+
+## 4. Direction of responsibility
+
+| Concern | Handled by |
+|---------|-----------|
+| Control frame integrity | CRC8 in the LoRa frame |
+| Control frame loss | none — next frame in 200 ms; 750 ms silence triggers failsafe |
+| Telemetry integrity | nRF24 hardware CRC16 |
+| Telemetry loss | ESB automatic retransmission, up to 15 retries |
+| Duplicate telemetry | MAVLink CRC downstream |
+| Attitude limits | flight controller `ANGLE_MAX` |
