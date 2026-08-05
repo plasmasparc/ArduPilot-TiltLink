@@ -40,3 +40,41 @@ configure as soon as it connects.
 The link carries roughly 5760 B/s at 57600 baud. Set stream rates so the FC does
 not try to push more than the UART can carry — the radio has ninefold headroom
 above the UART, so the UART is the binding constraint, not the RF link.
+
+## RC channel functions
+
+| Parameter | Value | Effect |
+|-----------|-------|--------|
+| `RC6_OPTION` | 153 | channel 6 is the arm/disarm switch |
+| `ANGLE_MAX` | 2000–3000 | maximum commanded lean angle, in centidegrees |
+
+`ANGLE_MAX` is the hard ceiling on what the tilt controller can command. With
+`USE_FULL_STICK_RANGE 0` in the handheld sketch, the scaling assumes 3000; with
+it set to 1, set `ANGLE_MAX 2000` and the FC enforces the ±20° limit itself.
+The second arrangement is preferable — no firmware bug in the handheld can
+exceed a limit the FC applies.
+
+## Failsafe
+
+The air node stops emitting CRSF after 750 ms of LoRa silence. Configure the FC's
+own RC failsafe (`FS_THR_ENABLE`, `RC_FS_TIMEOUT`) for what should happen then;
+this project does not substitute for it.
+
+Because the handheld link is one-way, there is no "transmitter says it lost the
+aircraft" path. Loss of control and loss of telemetry are independent events on
+independent bands, and the failsafe must be configured for either happening
+alone.
+
+## Bench checklist
+
+1. Propellers off.
+2. Both radios have antennas.
+3. Air node USB serial shows `[LORA] init=1` and rising `good`, with `crcBad`
+   near zero.
+4. Air node shows `[NRF] init=1`, `txOk` rising, `txFail` near zero.
+5. GCS connects and `link=UP` appears in the ground station diagnostics.
+6. Tilt the handheld and confirm the FC's RC input page moves channels 1 and 2.
+7. Arm switch: confirm channel 6 goes to 2000 µs and that arming is refused
+   above minimum throttle.
+8. Only then fit propellers.
+
