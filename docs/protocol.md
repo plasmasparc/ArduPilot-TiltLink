@@ -32,3 +32,32 @@ node moves the values into the CRSF frame without any rescaling.
 
 The sequence number is not used for retransmission — there is none. It only lets
 the receiver count lost frames as a link-quality indicator.
+
+## 2. CRSF — air node → flight controller
+
+Standard CrossFire framing on a 416666-baud UART, sync byte 0xC8, CRC8 DVB-S2
+over type and payload.
+
+| Type | Name | Rate | Length |
+|------|------|------|--------|
+| 0x16 | `RC_CHANNELS_PACKED` | 50 Hz | 26 bytes |
+| 0x14 | `LINK_STATISTICS` | 5 Hz | 14 bytes |
+
+Channel assignment as seen by ArduPilot:
+
+| CRSF channel | Value |
+|--------------|-------|
+| 1 | roll, from the LoRa frame |
+| 2 | pitch, from the LoRa frame |
+| 3 | throttle, from the LoRa frame |
+| 4 | yaw, from the LoRa frame |
+| 5 | 1000 µs, fixed |
+| 6 | 2000 µs when armed, 1000 µs otherwise |
+| 7–16 | 1500 µs, fixed |
+
+`LINK_STATISTICS` carries the measured LoRa RSSI, SNR and computed link quality,
+so the FC and the GCS display real link state rather than a placeholder.
+
+Link quality is computed over a 2 s window as the ratio of good frames to
+expected frames, where expected is derived from `AIR_STALE_MS`, and clamped to
+100.
